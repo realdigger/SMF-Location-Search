@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<name>Location Search in memberlist</name>
+	<id>digger:location_search</id>
+	<version>1.0</version>
+	<file name="$sourcedir/Memberlist.php">
+		<operation>
+			<search position="before"><![CDATA[
+		'msn' => array(
+			'label' => $txt['msn'],
+			'width' => '25'
+		),]]></search>
+			<add><![CDATA[
+		//Location
+		'location' => array(
+			'label' => $txt['location']
+		),]]></add>
+	</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		'msn' => array(
+			'down' => 'LENGTH(mem.msn) > 0 ASC, IFNULL(mem.msn, 1=1) DESC, mem.msn DESC',
+			'up' => 'LENGTH(mem.msn) > 0 DESC, IFNULL(mem.msn, 1=1) ASC, mem.msn ASC'
+		),]]></search>
+			<add><![CDATA[
+		//location
+			'location' => array(
+			'down' => 'mem.location DESC',
+			'up' => 'mem.location ASC'
+		),]]></add>
+	</operation>
+
+	<operation>
+			<search position="before"><![CDATA[
+			'group' => $txt['mlist_search_group'],]]></search>
+			<add><![CDATA[
+			'location' => $txt['mlist_search_location'],]]></add>
+	</operation>
+	
+		<operation>
+			<search position="before"><![CDATA[
+		// Search for messengers...
+		if (in_array('messenger', $_POST['fields']) && (!$user_info['is_guest'] || empty($modSettings['guest_hideContacts'])))
+			$fields += array(3 => 'msn', 'aim', 'icq', 'yim');]]></search>
+			<add><![CDATA[
+		// Search for location.
+		if (in_array('location', $_POST['fields']))
+			$fields += array(11 => 'location');]]></add>
+	</operation>			
+	</file>
+	<file name="$themedir/Memberlist.template.php">
+		<operation>
+			<search position="before"><![CDATA[
+		// MSN?
+		if (!isset($context['disabled_fields']['msn']))
+			echo '
+					<td class="windowbg2">', $member['msn']['link'], '</td>';]]></search>
+			<add><![CDATA[
+		if (!isset($context['disabled_fields']['location']))
+			echo '
+					<td class="windowbg2">', $member['location'], '</td>';]]></add>
+	</operation>
+	</file>	
+</modification>
